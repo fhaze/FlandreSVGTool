@@ -151,7 +151,11 @@ class Ui_MainWindow(object):
         MainWindow.setTabOrder(self.btnOutputDir, self.comboBoxMode)
         MainWindow.setTabOrder(self.comboBoxMode, self.checkBoxIos)
         MainWindow.setTabOrder(self.checkBoxIos, self.checkBoxAndroid)
-        MainWindow.setTabOrder(self.checkBoxAndroid, self.btnConvert)
+        MainWindow.setTabOrder(self.checkBoxAndroid, self.lineWidth)
+        MainWindow.setTabOrder(self.lineWidth, self.lineHeight)
+        MainWindow.setTabOrder(self.lineHeight, self.checkBoxRatio)
+        MainWindow.setTabOrder(self.checkBoxRatio, self.btnConvert)
+        MainWindow.setTabOrder(self.btnConvert, self.btnCancel)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate

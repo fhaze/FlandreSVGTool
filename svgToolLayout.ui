@@ -448,7 +448,11 @@
   <tabstop>comboBoxMode</tabstop>
   <tabstop>checkBoxIos</tabstop>
   <tabstop>checkBoxAndroid</tabstop>
+  <tabstop>lineWidth</tabstop>
+  <tabstop>lineHeight</tabstop>
+  <tabstop>checkBoxRatio</tabstop>
   <tabstop>btnConvert</tabstop>
+  <tabstop>btnCancel</tabstop>
  </tabstops>
  <resources/>
  <connections/>
