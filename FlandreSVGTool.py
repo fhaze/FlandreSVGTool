@@ -92,6 +92,7 @@ class SvgTool(QMainWindow):
             errormsg.show()
             return
 
+        self.setUiInProgress(True)
         self.convertProgress = SvgConversion(
             self.inputFiles,
             self.ui.checkBoxAndroid.isChecked(),
@@ -104,11 +105,11 @@ class SvgTool(QMainWindow):
             float(self.ui.lineHeight.text()),
             self.isMultiplier
         )
-        self.convertProgress.start()
         self.convertProgress.sigSetProgress.connect(self.setProgress)
         self.convertProgress.sigSetProgressTotal.connect(self.setProgressTotal)
         self.convertProgress.sigSetStatusMessage.connect(self.setStatusMessage)
         self.convertProgress.sigSetUiInProgress.connect(self.setUiInProgress)
+        self.convertProgress.start()
 
     def onBtnCancel(self):
         self.ui.btnCancel.setEnabled(False)
@@ -211,9 +212,10 @@ class SvgConversion(QThread):
         fileCurrent = 0
         fileCount = len(self.inputFiles)
 
-        self.sigSetUiInProgress.emit(True)
-
         for file in self.inputFiles:
+            if self.cancelToken:
+                break
+
             convertCurrent = 0
             convertCount = 0
 
