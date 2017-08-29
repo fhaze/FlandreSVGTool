@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'svgToolLayout.ui'
+# Form implementation generated from reading ui file '.\svgToolLayout.ui'
 #
 # Created by: PyQt5 UI code generator 5.9
 #
@@ -30,7 +30,7 @@ class Ui_MainWindow(object):
         self.groupBox.setGeometry(QtCore.QRect(10, 10, 531, 91))
         self.groupBox.setObjectName("groupBox")
         self.btnInputDir = QtWidgets.QPushButton(self.groupBox)
-        self.btnInputDir.setGeometry(QtCore.QRect(430, 27, 91, 32))
+        self.btnInputDir.setGeometry(QtCore.QRect(440, 30, 81, 23))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -63,14 +63,14 @@ class Ui_MainWindow(object):
         self.groupBox2.setGeometry(QtCore.QRect(10, 110, 531, 221))
         self.groupBox2.setObjectName("groupBox2")
         self.btnOutputDir = QtWidgets.QPushButton(self.groupBox2)
-        self.btnOutputDir.setGeometry(QtCore.QRect(430, 27, 91, 32))
+        self.btnOutputDir.setGeometry(QtCore.QRect(440, 30, 81, 23))
         self.btnOutputDir.setObjectName("btnOutputDir")
         self.lineOutputDir = QtWidgets.QLineEdit(self.groupBox2)
         self.lineOutputDir.setGeometry(QtCore.QRect(70, 30, 361, 23))
         self.lineOutputDir.setReadOnly(True)
         self.lineOutputDir.setObjectName("lineOutputDir")
         self.comboBoxMode = QtWidgets.QComboBox(self.groupBox2)
-        self.comboBoxMode.setGeometry(QtCore.QRect(68, 59, 255, 26))
+        self.comboBoxMode.setGeometry(QtCore.QRect(70, 60, 255, 23))
         self.comboBoxMode.setObjectName("comboBoxMode")
         self.label_2 = QtWidgets.QLabel(self.groupBox2)
         self.label_2.setGeometry(QtCore.QRect(20, 30, 41, 22))
@@ -124,11 +124,11 @@ class Ui_MainWindow(object):
         self.checkBoxAndroid.setChecked(True)
         self.checkBoxAndroid.setObjectName("checkBoxAndroid")
         self.checkBoxVS = QtWidgets.QCheckBox(self.groupBox2)
-        self.checkBoxVS.setGeometry(QtCore.QRect(340, 60, 181, 26))
+        self.checkBoxVS.setGeometry(QtCore.QRect(340, 60, 181, 23))
         self.checkBoxVS.setChecked(True)
         self.checkBoxVS.setObjectName("checkBoxVS")
         self.btnConvert = QtWidgets.QPushButton(self.centralwidget)
-        self.btnConvert.setGeometry(QtCore.QRect(10, 400, 91, 32))
+        self.btnConvert.setGeometry(QtCore.QRect(10, 400, 91, 23))
         self.btnConvert.setObjectName("btnConvert")
         self.progressBarTotal = QtWidgets.QProgressBar(self.centralwidget)
         self.progressBarTotal.setGeometry(QtCore.QRect(10, 370, 421, 23))
@@ -155,11 +155,11 @@ class Ui_MainWindow(object):
         self.progressBar.setProperty("value", 0)
         self.progressBar.setObjectName("progressBar")
         self.btnCancel = QtWidgets.QPushButton(self.centralwidget)
-        self.btnCancel.setGeometry(QtCore.QRect(100, 400, 91, 32))
+        self.btnCancel.setGeometry(QtCore.QRect(110, 400, 91, 23))
         self.btnCancel.setObjectName("btnCancel")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 550, 22))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 550, 19))
         font = QtGui.QFont()
         font.setPointSize(8)
         self.menubar.setFont(font)
@@ -211,4 +211,14 @@ class Ui_MainWindow(object):
         self.btnConvert.setText(_translate("MainWindow", "Export"))
         self.label_5.setText(_translate("MainWindow", "Let me handle this human!"))
         self.btnCancel.setText(_translate("MainWindow", "Cancel"))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())
 

@@ -203,6 +203,11 @@ class SvgTool(QMainWindow):
         self.ui.checkBoxVS.setEnabled(not state)
         self.ui.comboBoxMode.setEnabled(not state)
 
+        if len(self.iosSizeList) == 0:
+            self.ui.checkBoxIos.setEnabled(False)
+        if len(self.androidSizeList) == 0:
+            self.ui.checkBoxAndroid.setEnabled(False)
+
     def populateModes(self):
         for mode in self.modes:
             self.ui.comboBoxMode.addItem(mode.name, mode.id)
@@ -238,7 +243,6 @@ class SvgConversion(QThread):
     def run(self):
         fileCurrent = 0
         fileCount = len(self.inputFiles)
-        iosXCAssets = ""
 
         self.createDirectories()
 
@@ -341,7 +345,6 @@ class SvgConversion(QThread):
                             newitem.set("Include", outfile.split("/iOS/")[1].replace("/", "\\"))
                             iositemgroup.append(newitem)
                             iOSSolutionXml.write(iOSSolution)
-
 
                     if os.path.isfile(outfile):
                         os.remove(outfile)

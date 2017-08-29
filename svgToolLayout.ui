@@ -53,10 +53,10 @@
     <widget class="QPushButton" name="btnInputDir">
      <property name="geometry">
       <rect>
-       <x>430</x>
-       <y>27</y>
-       <width>91</width>
-       <height>32</height>
+       <x>440</x>
+       <y>30</y>
+       <width>81</width>
+       <height>23</height>
       </rect>
      </property>
      <property name="sizePolicy">
@@ -165,10 +165,10 @@
     <widget class="QPushButton" name="btnOutputDir">
      <property name="geometry">
       <rect>
-       <x>430</x>
-       <y>27</y>
-       <width>91</width>
-       <height>32</height>
+       <x>440</x>
+       <y>30</y>
+       <width>81</width>
+       <height>23</height>
       </rect>
      </property>
      <property name="text">
@@ -191,10 +191,10 @@
     <widget class="QComboBox" name="comboBoxMode">
      <property name="geometry">
       <rect>
-       <x>68</x>
-       <y>59</y>
+       <x>70</x>
+       <y>60</y>
        <width>255</width>
-       <height>26</height>
+       <height>23</height>
       </rect>
      </property>
     </widget>
@@ -403,7 +403,7 @@
        <x>340</x>
        <y>60</y>
        <width>181</width>
-       <height>26</height>
+       <height>23</height>
       </rect>
      </property>
      <property name="text">
@@ -420,7 +420,7 @@
       <x>10</x>
       <y>400</y>
       <width>91</width>
-      <height>32</height>
+      <height>23</height>
      </rect>
     </property>
     <property name="text">
@@ -496,10 +496,10 @@
    <widget class="QPushButton" name="btnCancel">
     <property name="geometry">
      <rect>
-      <x>100</x>
+      <x>110</x>
       <y>400</y>
       <width>91</width>
-      <height>32</height>
+      <height>23</height>
      </rect>
     </property>
     <property name="text">
@@ -513,7 +513,7 @@
      <x>0</x>
      <y>0</y>
      <width>550</width>
-     <height>22</height>
+     <height>19</height>
     </rect>
    </property>
    <property name="font">
