@@ -30,7 +30,7 @@ class Ui_MainWindow(object):
         self.groupBox.setGeometry(QtCore.QRect(10, 10, 531, 91))
         self.groupBox.setObjectName("groupBox")
         self.btnInputDir = QtWidgets.QPushButton(self.groupBox)
-        self.btnInputDir.setGeometry(QtCore.QRect(440, 27, 81, 32))
+        self.btnInputDir.setGeometry(QtCore.QRect(430, 27, 91, 32))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -63,7 +63,7 @@ class Ui_MainWindow(object):
         self.groupBox2.setGeometry(QtCore.QRect(10, 110, 531, 121))
         self.groupBox2.setObjectName("groupBox2")
         self.btnOutputDir = QtWidgets.QPushButton(self.groupBox2)
-        self.btnOutputDir.setGeometry(QtCore.QRect(440, 27, 81, 32))
+        self.btnOutputDir.setGeometry(QtCore.QRect(430, 27, 91, 32))
         self.btnOutputDir.setObjectName("btnOutputDir")
         self.lineOutputDir = QtWidgets.QLineEdit(self.groupBox2)
         self.lineOutputDir.setGeometry(QtCore.QRect(60, 30, 371, 23))
@@ -78,7 +78,7 @@ class Ui_MainWindow(object):
         self.checkBoxAndroid.setChecked(True)
         self.checkBoxAndroid.setObjectName("checkBoxAndroid")
         self.comboBoxMode = QtWidgets.QComboBox(self.groupBox2)
-        self.comboBoxMode.setGeometry(QtCore.QRect(60, 60, 281, 22))
+        self.comboBoxMode.setGeometry(QtCore.QRect(58, 59, 281, 26))
         self.comboBoxMode.setObjectName("comboBoxMode")
         self.label_2 = QtWidgets.QLabel(self.groupBox2)
         self.label_2.setGeometry(QtCore.QRect(10, 30, 41, 22))
@@ -187,14 +187,4 @@ class Ui_MainWindow(object):
         self.btnConvert.setText(_translate("MainWindow", "Convert"))
         self.label_5.setText(_translate("MainWindow", "Let me handle this human!"))
         self.btnCancel.setText(_translate("MainWindow", "Cancel"))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())
 

@@ -53,9 +53,9 @@
     <widget class="QPushButton" name="btnInputDir">
      <property name="geometry">
       <rect>
-       <x>440</x>
+       <x>430</x>
        <y>27</y>
-       <width>81</width>
+       <width>91</width>
        <height>32</height>
       </rect>
      </property>
@@ -165,9 +165,9 @@
     <widget class="QPushButton" name="btnOutputDir">
      <property name="geometry">
       <rect>
-       <x>440</x>
+       <x>430</x>
        <y>27</y>
-       <width>81</width>
+       <width>91</width>
        <height>32</height>
       </rect>
      </property>
@@ -223,10 +223,10 @@
     <widget class="QComboBox" name="comboBoxMode">
      <property name="geometry">
       <rect>
-       <x>60</x>
-       <y>60</y>
+       <x>58</x>
+       <y>59</y>
        <width>281</width>
-       <height>22</height>
+       <height>26</height>
       </rect>
      </property>
     </widget>
