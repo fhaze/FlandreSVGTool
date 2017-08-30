@@ -282,7 +282,11 @@ class SvgConversion(QThread):
                     iOSSolution = self.findIosSolutionFile()
                     iOSSolutionXml = xml.etree.ElementTree.parse(iOSSolution)
                     root = iOSSolutionXml.getroot()
-                    iositemgroup = root.findall("{http://schemas.microsoft.com/developer/msbuild/2003}ItemGroup")[1]
+
+                    if self.isXCAssets:
+                        iositemgroup = root.findall("{http://schemas.microsoft.com/developer/msbuild/2003}ItemGroup")[1]
+                    else:
+                        iositemgroup = root.findall("{http://schemas.microsoft.com/developer/msbuild/2003}ItemGroup")[6]
 
                 self.sigSetStatusMessage.emit('Exporting iOS({0}/{1}): "{2}"'.format(fileCurrent, fileCount, infile))
                 for size in self.iosSizeList:
@@ -341,7 +345,11 @@ class SvgConversion(QThread):
                                 break
 
                         if doInclude:
-                            newitem = xml.etree.ElementTree.Element("ImageAsset")
+                            if self.isXCAssets:
+                                newitem = xml.etree.ElementTree.Element("ImageAsset")
+                            else:
+                                newitem = xml.etree.ElementTree.Element("BundleResource")
+
                             newitem.set("Include", outfile.split("/iOS/")[1].replace("/", "\\"))
                             iositemgroup.append(newitem)
                             iOSSolutionXml.write(iOSSolution)
