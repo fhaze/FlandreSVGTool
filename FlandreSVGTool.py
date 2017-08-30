@@ -244,7 +244,10 @@ class SvgConversion(QThread):
         fileCurrent = 0
         fileCount = len(self.inputFiles)
 
-        self.createDirectories()
+        androidfolder = self.findAndroidSolutionFolder()
+        iosfolder = self.findIosSolutionFolder()
+
+        self.createDirectories(androidfolder, iosfolder)
 
         for file in self.inputFiles:
             if self.cancelToken:
@@ -263,30 +266,36 @@ class SvgConversion(QThread):
 
             infile = "{0}/{1}".format(self.inputDir, file)
             self.sigSetProgressTotal.emit((fileCurrent / fileCount) * 100)
-            if self.isXCAssets:
-                if self.isMultiplier:
-                    contentjson = {
-                        'images': [{'idiom': "universal"}],
-                        'properties': {'template-rendering-intent': ""},
-                        'info': {'version': 1, 'author': "xcode"}
-                    }
-                else:
-                    contentjson = {
-                        'images': [],
-                        'info': {'version': 1, 'author': "xcode"}
-                    }
-
             if self.convertIos:
+                if self.isXCAssets:
+                    if self.isMultiplier:
+                        contentjson = {
+                            'images': [{'idiom': "universal"}],
+                            'properties': {'template-rendering-intent': ""},
+                            'info': {'version': 1, 'author': "xcode"}
+                        }
+                    else:
+                        contentjson = {
+                            'images': [],
+                            'info': {'version': 1, 'author': "xcode"}
+                        }
+
                 if self.isUpdateSolution:
                     xml.etree.ElementTree.register_namespace("", "http://schemas.microsoft.com/developer/msbuild/2003")
-                    iOSSolution = self.findIosSolutionFile()
+                    iOSSolution = self.findIosSolutionFile(iosfolder)
                     iOSSolutionXml = xml.etree.ElementTree.parse(iOSSolution)
                     root = iOSSolutionXml.getroot()
 
                     if self.isXCAssets:
-                        iositemgroup = root.findall("{http://schemas.microsoft.com/developer/msbuild/2003}ItemGroup")[1]
+                        try:
+                            iositemgroup = root.findall("{http://schemas.microsoft.com/developer/msbuild/2003}ItemGroup")[1]
+                        except IndexError:
+                            iositemgroup = root.findall("{http://schemas.microsoft.com/developer/msbuild/2003}ItemGroup")[0]
                     else:
-                        iositemgroup = root.findall("{http://schemas.microsoft.com/developer/msbuild/2003}ItemGroup")[6]
+                        try:
+                            iositemgroup = root.findall("{http://schemas.microsoft.com/developer/msbuild/2003}ItemGroup")[6]
+                        except IndexError:
+                            iositemgroup = root.findall("{http://schemas.microsoft.com/developer/msbuild/2003}ItemGroup")[0]
 
                 self.sigSetStatusMessage.emit('Exporting iOS({0}/{1}): "{2}"'.format(fileCurrent, fileCount, infile))
                 for size in self.iosSizeList:
@@ -321,11 +330,11 @@ class SvgConversion(QThread):
                             for elem in elems:
                                 contentjson['images'].append(elem)
 
-                        outfile = "{0}/iOS{1}/{2}".format(self.outputDir, iosXCAssets, outfilename)
-                        outcontentjson = "{0}/iOS{1}/{2}".format(self.outputDir, iosXCAssets, "Contents.json")
+                        outfile = "{0}/{1}{2}/{3}".format(self.outputDir, iosfolder, iosXCAssets, outfilename)
+                        outcontentjson = "{0}/{1}{2}/{3}".format(self.outputDir, iosfolder, iosXCAssets, "Contents.json")
 
-                        if not os.path.exists("{0}/iOS{1}".format(self.outputDir, iosXCAssets)):
-                            os.makedirs("{0}/iOS{1}".format(self.outputDir, iosXCAssets))
+                        if not os.path.exists("{0}/{1}{2}".format(self.outputDir, iosfolder, iosXCAssets)):
+                            os.makedirs("{0}/{1}{2}".format(self.outputDir, iosfolder, iosXCAssets))
 
                         if os.path.exists(outcontentjson):
                             os.remove(outcontentjson)
@@ -333,11 +342,11 @@ class SvgConversion(QThread):
                         with open(outcontentjson, 'w') as outjson:
                             json.dump(contentjson, outjson)
                     else:
-                        outfile = "{0}/iOS/Resources/{1}".format(self.outputDir, outfilename)
+                        outfile = "{0}/{1}/Resources/{2}".format(self.outputDir, iosfolder, outfilename)
 
                     if self.isUpdateSolution:
                         doInclude = True
-                        iosinclude = outfile.split("/iOS/")[1].replace("/", "\\").replace("@", "%40")
+                        iosinclude = outfile.split("/{0}/".format(iosfolder))[1].replace("/", "\\").replace("@", "%40")
 
                         for item in iositemgroup:
                             if item.attrib["Include"] == iosinclude:
@@ -350,7 +359,7 @@ class SvgConversion(QThread):
                             else:
                                 newitem = xml.etree.ElementTree.Element("BundleResource")
 
-                            newitem.set("Include", outfile.split("/iOS/")[1].replace("/", "\\"))
+                            newitem.set("Include", outfile.split("/{0}/".format(iosfolder))[1].replace("/", "\\"))
                             iositemgroup.append(newitem)
                             iOSSolutionXml.write(iOSSolution)
 
@@ -362,7 +371,7 @@ class SvgConversion(QThread):
 
                 if self.isXCAssets:
                     doInclude = True
-                    ioscontentinclude = outcontentjson.split("/iOS/")[1]
+                    ioscontentinclude = outcontentjson.split("/{0}/".format(iosfolder))[1]
 
                     for item in iositemgroup:
                         if item.attrib["Include"] == ioscontentinclude:
@@ -378,10 +387,14 @@ class SvgConversion(QThread):
             if self.convertAndroid:
                 if self.isUpdateSolution:
                     xml.etree.ElementTree.register_namespace("", "http://schemas.microsoft.com/developer/msbuild/2003")
-                    androidSolution = self.findAndroidSolutionFile()
+                    androidSolution = self.findAndroidSolutionFile(androidfolder)
                     androidSolutionXml = xml.etree.ElementTree.parse(androidSolution)
                     root = androidSolutionXml.getroot()
-                    androiditemgroup = root.findall("{http://schemas.microsoft.com/developer/msbuild/2003}ItemGroup")[3]
+
+                    try:
+                        androiditemgroup = root.findall("{http://schemas.microsoft.com/developer/msbuild/2003}ItemGroup")[3]
+                    except IndexError:
+                        androiditemgroup = root.findall("{http://schemas.microsoft.com/developer/msbuild/2003}ItemGroup")[0]
 
                 self.sigSetStatusMessage.emit('Exporting Droid({0}/{1}): "{2}"'.format(fileCurrent, fileCount, infile))
                 for size in self.androidSizeList:
@@ -392,22 +405,22 @@ class SvgConversion(QThread):
 
                     if self.isMultiplier:
                         if size == 3:
-                            outfile = "{0}/Droid/Resources/drawable-xxhdpi/{1}".format(self.outputDir,
+                            outfile = "{0}/{1}/Resources/drawable-xxhdpi/{2}".format(self.outputDir, androidfolder,
                                                                                        str.replace(file, ".svg", ".png"))
                         elif size == 2:
-                            outfile = "{0}/Droid/Resources/drawable-xhdpi/{1}".format(self.outputDir,
+                            outfile = "{0}/{1}/Resources/drawable-xhdpi/{2}".format(self.outputDir, androidfolder,
                                                                                       str.replace(file, ".svg", ".png"))
                         elif size == 1.5:
-                            outfile = "{0}/Droid/Resources/drawable-hdpi/{1}".format(self.outputDir,
+                            outfile = "{0}/{1}/Resources/drawable-hdpi/{2}".format(self.outputDir, androidfolder,
                                                                                      str.replace(file, ".svg", ".png"))
                         else:
-                            outfile = "{0}/Droid/Resources/drawable/{1}".format(self.outputDir,
+                            outfile = "{0}/{1}/Resources/drawable/{2}".format(self.outputDir, androidfolder,
                                                                                 str.replace(file, ".svg", ".png"))
 
                         width = size * self.baseWidth
                         height = size * self.baseHeight
                     else:
-                        outfile = "{0}/Droid/Resources/{1}".format(self.outputDir, str.replace(file, ".svg", "_{0}".format(str(size))))
+                        outfile = "{0}/{1}/Resources/{2}".format(self.outputDir, androidfolder, str.replace(file, ".svg", "_{0}".format(str(size))))
 
                         width = size
                         height = size
@@ -417,7 +430,7 @@ class SvgConversion(QThread):
 
                     if self.isUpdateSolution:
                         doInclude = True
-                        androidinclude = outfile.split("/Droid/")[1].replace("/", "\\")
+                        androidinclude = outfile.split("/{0}/".format(androidfolder))[1].replace("/", "\\")
 
                         for item in androiditemgroup:
                             if item.attrib["Include"] == androidinclude:
@@ -426,7 +439,7 @@ class SvgConversion(QThread):
 
                         if doInclude:
                             newitem = xml.etree.ElementTree.Element("AndroidResource")
-                            newitem.set("Include", outfile.split("/Droid/")[1].replace("/", "\\"))
+                            newitem.set("Include", outfile.split("/{0}/".format(androidfolder))[1].replace("/", "\\"))
                             androiditemgroup.append(newitem)
                             androidSolutionXml.write(androidSolution)
 
@@ -443,31 +456,43 @@ class SvgConversion(QThread):
         self.sigSetStatusMessage.emit("Flandre finished her job!")
         self.sigSetUiInProgress.emit(False)
 
-    def findAndroidSolutionFile(self):
-        for file in os.listdir("{0}/Droid".format(self.outputDir)):
-            if file.endswith(".csproj"):
-                return "{0}/Droid/{1}".format(self.outputDir, file)
+    def findAndroidSolutionFolder(self):
+        for file in os.listdir(self.outputDir):
+            if file.endswith("Droid") or file.endswith("Android"):
+                return file
+        return "Droid"
 
-    def findIosSolutionFile(self):
-        for file in os.listdir("{0}/iOS".format(self.outputDir)):
-            if file.endswith(".csproj"):
-                return "{0}/iOS/{1}".format(self.outputDir, file)
+    def findIosSolutionFolder(self):
+        for file in os.listdir(self.outputDir):
+            if file.endswith("iOS"):
+                return file
+        return "iOS"
 
-    def createDirectories(self):
+    def findAndroidSolutionFile(self, androidfolder):
+        for file in os.listdir("{0}/{1}".format(self.outputDir, androidfolder)):
+            if file.endswith(".csproj"):
+                return "{0}/{1}/{2}".format(self.outputDir, androidfolder, file)
+
+    def findIosSolutionFile(self, iosfolder):
+        for file in os.listdir("{0}/{1}".format(self.outputDir, iosfolder)):
+            if file.endswith(".csproj"):
+                return "{0}/{1}/{2}".format(self.outputDir, iosfolder, file)
+
+    def createDirectories(self, androidfolder, iosfolder):
         directories = [
-            "/Droid",
-            "/Droid/Resources",
-            "/Droid/Resources/drawable",
-            "/Droid/Resources/drawable-hdpi",
-            "/Droid/Resources/drawable-xhdpi",
-            "/Droid/Resources/drawable-xxhdpi",
-            "/iOS"
+            "/{0}".format(androidfolder),
+            "/{0}/Resources".format(androidfolder),
+            "/{0}/Resources/drawable".format(androidfolder),
+            "/{0}/Resources/drawable-hdpi".format(androidfolder),
+            "/{0}/Resources/drawable-xhdpi".format(androidfolder),
+            "/{0}/Resources/drawable-xxhdpi".format(androidfolder),
+            "/{0}".format(iosfolder)
         ]
 
         if self.isXCAssets:
-            directories.append("/iOS/Assets.xcassets")
+            directories.append("/{0}/Assets.xcassets".format(iosfolder))
         else:
-            directories.append("/iOS/Resources")
+            directories.append("/{0}/Resources".format(iosfolder))
 
         for directory in directories:
             if not os.path.exists(self.outputDir + directory):
