@@ -6,7 +6,7 @@ import xml.etree.ElementTree
 from PyQt5 import QtCore, QtWidgets
 
 from PyQt5.QtCore import QThread
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog
 
 from svgToolMainWindow import Ui_MainWindow
@@ -43,6 +43,8 @@ class SvgTool(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
+        self.listViewFilesModel = QStandardItemModel(self.ui.listViewFiles)
+
         self.ui.btnCancel.setEnabled(False)
         self.ui.btnConvert.setEnabled(False)
         self.ui.labelImage.setPixmap(QPixmap("flandre.png"))
@@ -56,7 +58,10 @@ class SvgTool(QMainWindow):
         self.ui.checkBoxRatio.stateChanged.connect(self.onCheckBoxRatioChanged)
         self.ui.btnConvert.clicked.connect(self.onBtnConvert)
         self.ui.btnCancel.clicked.connect(self.onBtnCancel)
-
+        self.ui.btnRefresh.clicked.connect(self.refreshInputDirectory)
+        self.ui.btnSelectAll.clicked.connect(self.selectAll)
+        self.ui.btnSelectNone.clicked.connect(self.selectNone)
+        self.listViewFilesModel.itemChanged.connect(self.listViewChanged)
         self.populateModes()
 
     def onLineFilterTextChanged(self):
@@ -168,33 +173,71 @@ class SvgTool(QMainWindow):
     def setStatusMessage(self, statusMessage):
         self.ui.statusbar.showMessage(statusMessage)
 
+    def selectAll(self):
+        for index in range(self.listViewFilesModel.rowCount()):
+            item = self.listViewFilesModel.item(index)
+            item.setCheckState(QtCore.Qt.Checked)
+
+    def selectNone(self):
+        for index in range(self.listViewFilesModel.rowCount()):
+            item = self.listViewFilesModel.item(index)
+            item.setCheckState(QtCore.Qt.Unchecked)
+
+    def listViewChanged(self, item_changed):
+        selected = 0
+        self.inputFiles = []
+        for index in range(self.listViewFilesModel.rowCount()):
+            item = self.listViewFilesModel.item(index)
+            if item.checkState() == QtCore.Qt.Checked:
+                self.inputFiles.append(item.text())
+                selected += 1
+        self.ui.btnConvert.setEnabled(selected != 0)
+
+        if selected == 1:
+            self.ui.labelSelected.setText("{0} svg file selected".format(selected))
+        else:
+            self.ui.labelSelected.setText("{0} svg files selected".format(selected))
+
     def refreshInputDirectory(self):
         if not str(self.ui.lineInputDir.text()):
             return
+
+        self.listViewFilesModel = QStandardItemModel(self.ui.listViewFiles)
+        self.listViewFilesModel.itemChanged.connect(self.listViewChanged)
 
         self.inputFiles = []
         for file in os.listdir(self.ui.lineInputDir.text()):
             if self.ui.lineFilter.text().upper() in file.upper():
                 if file.endswith(".svg"):
-                    self.inputFiles.append(file)
-        filelen = len(self.inputFiles)
-        self.ui.labelFilter.setText("Found {0} svg file(s)".format(filelen))
-        if filelen > 0:
-            self.ui.btnConvert.setEnabled(True)
+                    item = QStandardItem(file)
+                    item.setCheckable(True)
+                    item.setCheckState(QtCore.Qt.Unchecked)
+                    self.listViewFilesModel.appendRow(item)
+
+        self.ui.listViewFiles.setModel(self.listViewFilesModel)
+
+        if self.listViewFilesModel.rowCount() == 1:
+            self.ui.labelFilter.setText("{0} svg file found".format(self.listViewFilesModel.rowCount()))
         else:
-            self.ui.btnConvert.setEnabled(False)
+            self.ui.labelFilter.setText("{0} svg files found".format(self.listViewFilesModel.rowCount()))
+        self.ui.labelSelected.setText("0 svg files selected")
+        self.ui.btnConvert.setEnabled(False)
 
     def setUiInProgress(self, state):
         self.ui.btnCancel.setEnabled(state)
         self.ui.btnConvert.setEnabled(not state)
         self.ui.btnInputDir.setEnabled(not state)
         self.ui.btnOutputDir.setEnabled(not state)
+        self.ui.btnSelectAll.setEnabled(not state)
+        self.ui.btnSelectNone.setEnabled(not state)
+        self.ui.btnRefresh.setEnabled(not state)
 
         if self.isMultiplier:
             self.ui.checkBoxRatio.setEnabled(not state)
             self.ui.lineWidth.setEnabled(not state)
             self.ui.lineHeight.setEnabled(not state)
 
+        self.ui.listViewFiles.setEnabled(not state)
         self.ui.lineFilter.setEnabled(not state)
         self.ui.checkBoxRatio.setEnabled(not state)
         self.ui.checkBoxAndroid.setEnabled(not state)
@@ -369,7 +412,7 @@ class SvgConversion(QThread):
                     self.sigSetProgress.emit((convertCurrent / convertCount) * 100)
                     os.system('svg2png "{0}" -o "{1}" -w {2} -h {3}'.format(infile, outfile, width, height))
 
-                if self.isXCAssets:
+                if self.isXCAssets and self.isUpdateSolution:
                     doInclude = True
                     ioscontentinclude = outcontentjson.split("/{0}/".format(iosfolder))[1]
 
