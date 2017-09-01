@@ -389,7 +389,7 @@ class SvgConversion(QThread):
 
                     if self.isUpdateSolution:
                         doInclude = True
-                        iosinclude = outfile.split("/{0}/".format(iosfolder))[1].replace("/", "\\").replace("@", "%40")
+                        iosinclude = outfile.split("/{0}/".format(iosfolder))[1].replace("/", "\\")
 
                         for item in iositemgroup:
                             if item.attrib["Include"] == iosinclude:
@@ -414,7 +414,7 @@ class SvgConversion(QThread):
 
                 if self.isXCAssets and self.isUpdateSolution:
                     doInclude = True
-                    ioscontentinclude = outcontentjson.split("/{0}/".format(iosfolder))[1]
+                    ioscontentinclude = outcontentjson.split("/{0}/".format(iosfolder))[1].replace("/", "\\")
 
                     for item in iositemgroup:
                         if item.attrib["Include"] == ioscontentinclude:
